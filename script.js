@@ -20,6 +20,8 @@ var isJumping=false;
 var speedJump=20;
 var g=9.8;
 
+var isFalling=false;
+
 // var t0,posx,posy,pos0x,pos0y,speed0x,speed0y ;
 
 
@@ -55,7 +57,7 @@ var lake={
   x:0,
   y:0,
   img:'lake.png',
-  width:150,
+  width:180,
   height:120
 };
 
@@ -65,6 +67,15 @@ var sun={
   img:'sun.png',
   width:150,
   height:120
+};
+
+var wood={
+  x:0,
+  y:0, 
+  color:'#D2691E',
+  // img:'wood.png',
+  width:70,
+  height:10
 };
 
 //left and right by KEYS LISTENTERS
@@ -100,7 +111,13 @@ var time=2;
 
 var info ='';
 
-
+var c =function (key,val,p) {
+  if (p==1) {
+    info=" *"+key+" : "+val; 
+  }else{
+    info+=" *"+key+" : "+val; 
+  }
+}
 // function startJump() {
 
 //   if (!isJumping) // Only jump if it is not yet currently jumping
@@ -120,13 +137,44 @@ function update(){
   //fire right & left
   if (keys[39]) {
       //Right
-      s('right '+fire.x+"|"+fire.width+"|"+WIDTH);
-      if (fire.x+fire.width<WIDTH) fire.x+=fire.turnSpeed;
+      
+      //don't cross x right limit
+      if (fire.x+fire.width<WIDTH) {
+        fire.x+=fire.turnSpeed;
+
+        c('fire.x',fire.x,1);
+        c('fire.width',fire.width,0);
+        c('lake.x',lake.x,0);
+        c('lake.width',lake.width,0);
+
+        c('isFalling',isFalling,0);
+
+        //detect fall position
+        if (fire.x+fire.width>lake.x && fire.x<lake.x+lake.width){ 
+          isFalling=true;
+          c('isFalling',isFalling,0);
+        } 
+
+      
+      
     }
-    if (keys[37]) {
+  }
+  if (keys[37]) {
       //Left
-      s('left '+fire.x+"|"+fire.width+"|"+WIDTH);
+
+      //don't cross x left limit
       if (fire.x>0) fire.x-=fire.turnSpeed;
+
+
+      c('isFalling',isFalling,1);
+
+      //detect fall position
+      if (fire.x+fire.width>lake.x || fire.x<lake.x+lake.width){ 
+        isFalling=true;
+        c('isFalling',isFalling,1);
+      }
+
+
     }
 
 //fire up & down
@@ -135,18 +183,22 @@ if (keys[38]) {
       s('up');
       //when press up it will jump
       // jump=true;
-      info='jump';
+      // c("state",'jump');
       
       //jump
+
+      //don't cross y up limits
       if (fire.y+fire.height>0)
         fire.y-=fire.turnSpeed;
-
 
     }
     else {
       // down
-      info ='down';
-      info=fire.y+" : "+fire.y0;
+      // c("state",'down');
+            // c("fire.y",fire.y);
+            // c("fire.yo",fire.y0)
+
+      //don't cross y down limits 
       if (fire.y<fire.y0)
         fire.y+=fire.turnSpeed;
     }
@@ -157,6 +209,7 @@ if (keys[38]) {
       s('down');
       
     }
+
 
 
   // if (isJumping)
@@ -219,7 +272,7 @@ ctxDrawer.strokeRect(0,0, WIDTH,HEIGHT);
   ctxDrawer.fillRect(land.x,land.y,land.width,land.height);
 
   //draw lake
-   
+
   var lakeImg=new Image();
   lakeImg.src=lake.img;
   lake.x=(WIDTH/2)-(lake.width/2);
@@ -227,14 +280,22 @@ ctxDrawer.strokeRect(0,0, WIDTH,HEIGHT);
   ctxDrawer.drawImage(lakeImg,lake.x,lake.y,lake.width,lake.height);
 
   //draw sun
-   
+
   var sunImg=new Image();
   sunImg.src=sun.img;
   lake.x=(WIDTH/2)-(lake.width/2);
   lake.y=HEIGHT-lake.height-9;
   ctxDrawer.drawImage(sunImg,sun.x,sun.y,sun.width,sun.height);
 
+  //draw wood   
+  ctxDrawer.fillStyle=wood.color;
+  wood.x=(WIDTH/2)-(wood.width/2);
+  wood.y=(HEIGHT/2)-(wood.height/2);
+  ctxDrawer.fillRect(wood.x,wood.y,wood.width,wood.height);
+  ctxDrawer.fillRect(wood.x,wood.y,wood.width,wood.height);
 
+
+  
 
   //draw fire
   var fireImg=new Image();
@@ -244,12 +305,12 @@ ctxDrawer.strokeRect(0,0, WIDTH,HEIGHT);
   score=fire.x+" - "+fire.y+" || "+fire.width+" - "+fire.height+" || "+WIDTH+" - "+HEIGHT;
 
   //draw score 
-  ctxDrawer.font = "9px arial";
+  ctxDrawer.font = "7px arial";
 // Create gradient
 
   // Fill with gradient
   ctxDrawer.fillStyle='black';
-  ctxDrawer.fillText(info, 100, 10);
+  ctxDrawer.fillText(info, 10, 10);
 
   
 

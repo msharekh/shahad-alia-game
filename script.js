@@ -21,8 +21,8 @@ var fire={
   y:0,
   turnSpeed:8,
   img:'fire.png',
-  width:50,
-  height:40
+  width:30,
+  height:30
 };
 var land={
   x:0,
@@ -42,15 +42,15 @@ var lake={
   x:0,
   y:0,
   img:'lake.png',
-  width:180,
-  height:120
+  width:170,
+  height:30
 };
 var sun={
-  x:WIDTH/2,
+  x:WIDTH-60,
   y:5, 
   img:'sun.png',
-  width:150,
-  height:120
+  width:60,
+  height:40
 };
 var wood={
   x:0,
@@ -82,6 +82,7 @@ var velocityY=10;
 var jumpHeightSquared=16;
 var gravityAccelerationY=10;
 var time=2;
+var isFall=false;
 var info ='';
 var c =function (key,val,p) {
   if (p==1) {
@@ -100,34 +101,50 @@ var c =function (key,val,p) {
 //       isJumping = true;
 //   }
 // }
-function checkBorderLimits(dir) {
-  //don't cross x right limit
-  //don't cross x left limit
+function checkLakeLimits(dir) {
   var result = true;
-  var fireRightX=fire.x+fire.width;
+  var fireRightX=fire.x+fire.width;  
   c('state','ok',1);
   c('fireRightX',fireRightX,0);
   c('WIDTH',WIDTH,0);
   c('fire.x',fire.x,0);
-
-  if (dir=='r') {
-    if (fireRightX>WIDTH  ) {
-      c('state','no',0);
-      result = false;
+  
+  var lakeRightX=lake.x+lake.width;
+  if (dir=='r') {//don't cross x right limit
+    if (fire.x> lake.x ) {      
+      isFall=true;
+      c('isFall',isFall,0);
+      
     }
-  }
-  else if(dir=='l'){
-    if (fire.x<0) {
-      c('state','no',0);
+  }  
+  else if(dir=='l'){//don't cross x left limit
+    if (fire.x<lakeRightX) {
+      isFall=true;
+      c('isFall',isFall,0);
+    }
+  } 
+  return isFall;
+}
+function checkBorderLimits(dir) {
+
+  var result = true;
+  var fireRightX=fire.x+fire.width;  
+  if (dir=='r') { //don't cross x right limit 
+    if (fireRightX>WIDTH  ) {
+      // c('state','no',0);
       result = false;
     }
   } 
-   
-
-  
-   
+  else if(dir=='l'){ //don't cross x left limit
+    if (fire.x<0) {
+      // c('state','no',0);
+      result = false;
+    }
+  } 
+  return result;
+}
     /*c('fire.x',fire.x,1);
-    c('fire.width',fire.width,0);
+    c('fire.width,fire.width,0);
     c('lake.x',lake.x,0);
     c('lake.width',lake.width,0);
     c('isFalling',isFalling,0);
@@ -136,19 +153,12 @@ function checkBorderLimits(dir) {
           isFalling=true;
           c('isFalling',isFalling,0);
         } */
-
-
-
-
     /*c('isFalling',isFalling,1);
       //detect fall position
       if (fire.x+fire.width>lake.x || fire.x<lake.x+lake.width){ 
         isFalling=true;
         c('isFalling',isFalling,1);
       }*/
-
-      return result;
-    }
 //ACITON
 function update(){
   /************ MOVEMENT LIMITS ***************/
@@ -157,13 +167,25 @@ function update(){
       //Right
       if(checkBorderLimits('r')){
         fire.x+=fire.turnSpeed;
-      }      
+      } 
+      if(checkLakeLimits('r')){
+        c('isFall',true,1);      
+      }     
+      else{
+        c('isFall',false,1);  
+      }
     }
     if (keys[37]) {
       //Left
       if(checkBorderLimits('l')){
         fire.x-=fire.turnSpeed;
       }
+      if(checkLakeLimits('l')){
+        c('isFall',true,1);     
+      }
+      else{
+        c('isFall',false,1);     
+      } 
     }
 //fire up & down
 if (keys[38]) {
@@ -235,7 +257,7 @@ ctxDrawer.strokeRect(0,0, WIDTH,HEIGHT);
   var lakeImg=new Image();
   lakeImg.src=lake.img;
   lake.x=(WIDTH/2)-(lake.width/2);
-  lake.y=HEIGHT-lake.height-9;
+  lake.y=land.y-1;
   ctxDrawer.drawImage(lakeImg,lake.x,lake.y,lake.width,lake.height);
   //draw sun
   var sunImg=new Image();

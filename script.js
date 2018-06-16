@@ -198,7 +198,7 @@ s(fire.jumping);
 if (keys[38] && fire.jumping == false) {
       //up
       s('up');
-      fire.y_velocity -= 15;
+      fire.y_velocity -= 15.5;
       fire.jumping = true;
       s(fire.jumping);
 

@@ -14,6 +14,7 @@ var g=9.8;
 var isFalling=false;
 // var t0,posx,posy,pos0x,pos0y,speed0x,speed0y ;
 //OBJECTS
+ 
 var fire={
   x0:10,
   x:0,
@@ -22,12 +23,15 @@ var fire={
   turnSpeed:8,
   img:'fire.png',
   width:30,
-  height:30
+  height:30,
+  jumping:true,
+  x_velocity:0,
+  y_velocity:0
 };
 var land={
   x:0,
   y:0,
-  color:'#D2691E', 
+  color:'#996633', 
   width:WIDTH,
   height:40
 };
@@ -55,7 +59,7 @@ var sun={
 var wood={
   x:0,
   y:0, 
-  color:'#D2691E',
+  // color:'#996633',
   // img:'wood.png',
   width:70,
   height:10
@@ -84,13 +88,7 @@ var gravityAccelerationY=10;
 var time=2;
 var isFall=false;
 var info ='';
-var c =function (key,val,p) {
-  if (p==1) {
-    info=" *"+key+" : "+val; 
-  }else{
-    info+=" *"+key+" : "+val; 
-  }
-}
+
 // function startJump() {
 //   if (!isJumping) // Only jump if it is not yet currently jumping
 //   {
@@ -161,59 +159,74 @@ function checkBorderLimits(dir) {
       }*/
 //ACITON
 function update(){
+
+
   /************ MOVEMENT LIMITS ***************/
   //fire right & left
   if (keys[39]) {
       //Right
+      fire.x_velocity += 0.5;
       if(checkBorderLimits('r')){
         fire.x+=fire.turnSpeed;
       } 
       if(checkLakeLimits('r')){
-        c('isFall',true,1);      
+        // c('isFall',true,1);      
       }     
       else{
-        c('isFall',false,1);  
+        // c('isFall',false,1);  
       }
     }
     if (keys[37]) {
+      fire.x_velocity -= 0.5;
       //Left
       if(checkBorderLimits('l')){
         fire.x-=fire.turnSpeed;
       }
       if(checkLakeLimits('l')){
-        c('isFall',true,1);     
+        // c('isFall',true,1);     
       }
       else{
         c('isFall',false,1);     
       } 
     }
 //fire up & down
-if (keys[38]) {
+// if (controller.up && fire.jumping == false) {
+//     fire.y_velocity = 20;
+//     fire.jumping = true;
+//   }
+s(fire.jumping);
+if (keys[38] && fire.jumping == false) {
       //up
       s('up');
+      fire.y_velocity -= 15;
+      fire.jumping = true;
+      s(fire.jumping);
+
       //when press up it will jump
       // jump=true;
       // c("state",'jump');
       
       //jump
       //don't cross y up limits
-      if (fire.y+fire.height>0)
-        fire.y-=fire.turnSpeed;
-    }
-    else {
-      // down
-      // c("state",'down');
-            // c("fire.y",fire.y);
-            // c("fire.yo",fire.y0)
-      //don't cross y down limits 
-      if (fire.y<fire.y0)
-        fire.y+=fire.turnSpeed;
-    }
+    //   fire.y_velocity = 20;
+    // fire.jumping = true;
+      // if (fire.y+fire.height>0)
+      //   fire.y-=fire.turnSpeed;
+    }//up
+    // else {
+    //   // down
+    //   // c("state",'down');
+    //         // c("fire.y",fire.y);
+    //         // c("fire.yo",fire.y0)
+    //   //don't cross y down limits 
+    //   if (fire.y<fire.y0)
+    //     fire.y+=fire.turnSpeed;
+    // }//down
     if (keys[40]) {
       //down
       s('down');
       
-    }
+    }//down
   // if (isJumping)
   // {
   //     t = Math.abs(t0-currentTime());  // difference in millisecond
@@ -236,7 +249,42 @@ if (keys[38]) {
   //   fire.y = 0;
   //   velocityY = 0;
   // }
-}
+
+  c('y_velocity',fire.y_velocity,1);
+
+
+  fire.y_velocity += 1.5; //gravity
+  fire.x += fire.x_velocity;
+  fire.y += fire.y_velocity;
+
+  fire.x_velocity *= 0.9 //friction
+  fire.y_velocity *= 0.9 //friction
+
+  var ground = land.height-land.height;
+
+  // c1('x',fire.x);
+  c('y',fire.y,0);
+  c('ground',ground,0);
+
+  // c1('y',fire.y);
+  // s(HEIGHT);
+  // s(land.height);
+  
+  // c('ground',ground,0);
+  if (fire.y > ground)
+  {
+      fire.y=ground;
+      fire.jumping = false;
+      fire.y_velocity=0;
+  }
+  else{
+
+  }
+
+  
+
+}//fn update
+
 //DRAWING
 function render(){
   //clear
@@ -296,6 +344,18 @@ function resetGame(){
 function s(x){
   console.log(x);
 }
+
+var c =function (key,val,p) {
+  if (p==1) {
+    info=" ..."+key+" : "+val; 
+  }else{
+    info+=" ..."+key+" : "+val; 
+  }
+}
+var c1 =function (key,val) {
+      console.log(key+" : "+val); 
+}
+
 //LIFE
 setInterval(function(){
   //while(running)  

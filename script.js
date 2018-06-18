@@ -32,7 +32,7 @@ var lake={
   y:sky.height-1,
   img:'lake.png',
   width:170,
-  height:30
+  height:40
 };
 var sun={
   x:WIDTH-60,
@@ -61,6 +61,8 @@ var wood={
   x_velocity:0,
   y_velocity:0
 };
+
+
 //left and right by KEYS LISTENTERS
 window.onkeydown = function(e) {
  keys[e.keyCode]=true; 
@@ -85,6 +87,7 @@ var gravityAccelerationY=10;
 var time=2;
 var isFall=false;
 var info ='';
+
  
 
 //ACITON
@@ -133,8 +136,8 @@ function update(){
     }//down
     //c('y_velocity',fire.y_velocity);
     //c('x_velocity',fire.x_velocity);
-  c('fire.y',fire.y);
-  c('wood.y',wood.y);
+  // c('fire.y',fire.y);
+  // c('wood.y',wood.y);
   // c('sky.height',sky.height);
 
   fire.y_velocity += 1.5; //gravity 
@@ -144,32 +147,55 @@ function update(){
   fire.y_velocity *= 0.9 //friction
 
   var ground_y;
-  
-  // ... enter water
-    if ( fire.x+fire.width>lake.x || fire.x<lake.x+lake.width) {
-      ground_y=HEIGHT-20;
-      c('enter water',ground_y);
+ var L_lake=parseInt(lake.x);
+ var R_lake=parseInt(lake.x)+parseInt(lake.width);
+ 
+ c1('lake',L_lake +" | "+ R_lake,1);
+ // c('wood l | wood r',wood.x +" | "+ parseInt(wood.x+wood.width));
 
-          // ... above land
-          if (fire.x+fire.width<lake.x+28 || fire.x>lake.x+lake.width) {
+  var L_fire=parseInt(fire.x);
+  var R_fire=parseInt(fire.x)+parseInt(fire.width);
+  c('fire',L_fire +" | "+ R_fire);
+  // c('lake l | lake r',lake.x +" | "+ parseInt(lake.x+lake.width));
+  // c('wood l | wood r',wood.x +" | "+ parseInt(wood.x+wood.width));
 
-            ground_y = sky.height-fire.height;
 
-            c('above land',ground_y);
-          }
-          // ... above wood
-          if (fire.x+fire.width>wood.x) {
+  // ... above land
+  if (R_fire<L_lake || L_fire>R_lake) {
 
-            ground_y = wood.y-fire.height;
+    ground_y = sky.height-fire.height;
 
-            c('above wood',ground_y);
-          }
+    c('above land',ground_y);
+  }
+  else{
+    
+    ground_y=HEIGHT-30;
 
-  }else{
-  // ... off wood
-    c('off wood',ground_y);
+    c('off land',ground_y);
+    c1('fire',L_fire +" | "+ R_fire,0);
 
   }
+
+  // ... enter water
+  //   if ( fire.x+fire.width>lake.x 
+  //       || fire.x<lake.x+lake.width) {
+  //     ground_y=HEIGHT-30;
+  //     // c('enter water',ground_y);
+
+
+  //         // ... above wood
+  //         // if (fire.x+fire.width>wood.x) {
+
+  //         //   ground_y = wood.y-fire.height;
+
+  //         //   c('above wood',ground_y);
+  //         // }
+
+  // }else{
+  // // ... off wood
+  //   c('off wood',ground_y);
+
+  // }
   // c('y',fire.y);
   // c('ground',ground);
 
@@ -220,7 +246,7 @@ function render(){
   ctxDrawer.drawImage(fireImg,fire.x,fire.y,fire.width,fire.height);
   score=fire.x+" - "+fire.y+" || "+fire.width+" - "+fire.height+" || "+WIDTH+" - "+HEIGHT;
   //draw info 
-  ctxDrawer.font = "7px arial";
+  ctxDrawer.font = "11px arial";
 // Create gradient
   // Fill with gradient
   ctxDrawer.fillStyle='black';
@@ -238,17 +264,17 @@ function resetGame(){
 function s(x){
   console.log(x);
 }
-// var c1 =function (key,val,p) {
-//   if (p==1) {
-//     info=" ..."+key+" : "+val; 
-//   }else{
-//     info+=" ..."+key+" : "+val; 
-//   }
-// }
+var c1 =function (key,val,p) {
+  if (p==1) {
+    info=key+" : "+val; 
+  }else{
+    info+=" ..."+key+" : "+val; 
+  }
+}
 var c =function (key,val) {
   console.log(key+" : "+val); 
 }
-//LIFE
+ //LIFE
 setInterval(function(){
   //while(running)  
   if(running && !finished) {

@@ -85,54 +85,18 @@ var gravityAccelerationY=10;
 var time=2;
 var isFall=false;
 var info ='';
-// function checkLakeLimits(dir) {
-//   var result = true;
-//   var fireRightX=fire.x+fire.width;  
-//   // c('state','ok',1);
-//   // c('fireRightX',fireRightX,0);
-//   // c('WIDTH',WIDTH,0);
-//   // c('fire.x',fire.x,0);
-  
-//   var lakeRightX=lake.x+lake.width;
-//   if (dir=='r') {//don't cross x right limit
-//     if (fire.x> lake.x ) {      
-//       isFall=true;
-//       // c('isFall',isFall,0);
-      
-//     }
-//   }  
-//   else if(dir=='l'){//don't cross x left limit
-//     if (fire.x<lakeRightX) {
-//       isFall=true;
-//       // c('isFall',isFall,0);
-//     }
-//   } 
-//   return isFall;
-// }
-// function checkBorderLimits(dir) {
-//   var result = true;
-//   var fireRightX=fire.x+fire.width;  
-//   if (dir=='r') { //don't cross x right limit 
-//     if (fireRightX>WIDTH  ) {
-//       // c('state','no',0);
-//       result = false;
-//     }
-//   } 
-//   else if(dir=='l'){ //don't cross x left limit
-//     if (fire.x<0) {
-//       // c('state','no',0);
-//       result = false;
-//     }
-//   } 
-//   return result;
-// }
+ 
 
 //ACITON
 function update(){
   /************ MOVEMENT LIMITS ***************/
-      //Right
+
+
+      //------#### Right ####------
    if (keys[39]) {
-      c1('right',fire.x);
+      c('right',fire.x);
+
+      //... R edge
       if (fire.x<WIDTH-fire.width+1) {
 
         fire.x_velocity += 1;
@@ -140,9 +104,11 @@ function update(){
       }
     }
 
-      //Left
+      //------#### Left ####------
     if (keys[37]) {
-      c1('left',fire.x);
+      c('left',fire.x);
+
+      //...L edge
       if (fire.x>1) {
 
         fire.x_velocity += 1;
@@ -151,35 +117,66 @@ function update(){
        
      }
      
-      //up
+      //------#### Up ####------
+      //work when ..... jumbing=false
      if (keys[38] && fire.jumping == false) {
       fire.y_velocity -= 15.5;
       fire.jumping = true;
       // s(fire.jumping);
     }//up
     
-      //down
+
+      //------#### Down ####------
     if (keys[40]) {
       s('down');
       
     }//down
-    // c1('y_velocity',fire.y_velocity);
-    //c1('x_velocity',fire.x_velocity);
-  c1('fire.y',fire.y);
-  // c1('sky.height',sky.height);
+    //c('y_velocity',fire.y_velocity);
+    //c('x_velocity',fire.x_velocity);
+  c('fire.y',fire.y);
+  c('wood.y',wood.y);
+  // c('sky.height',sky.height);
 
   fire.y_velocity += 1.5; //gravity 
   fire.y += fire.y_velocity;
 
   fire.x_velocity *= 0.9 //friction
   fire.y_velocity *= 0.9 //friction
-  var ground = sky.height-fire.height;
-  // c1('y',fire.y);
-  // c1('ground',ground);
 
-  if (fire.y > ground)
+  var ground_y;
+  
+  // ... enter water
+    if ( fire.x+fire.width>lake.x || fire.x<lake.x+lake.width) {
+      ground_y=HEIGHT-20;
+      c('enter water',ground_y);
+
+          // ... above land
+          if (fire.x+fire.width<lake.x+28 || fire.x>lake.x+lake.width) {
+
+            ground_y = sky.height-fire.height;
+
+            c('above land',ground_y);
+          }
+          // ... above wood
+          if (fire.x+fire.width>wood.x) {
+
+            ground_y = wood.y-fire.height;
+
+            c('above wood',ground_y);
+          }
+
+  }else{
+  // ... off wood
+    c('off wood',ground_y);
+
+  }
+  // c('y',fire.y);
+  // c('ground',ground);
+
+      //------#### Gravity ####------
+  if (fire.y > ground_y)
   {
-    fire.y=ground;
+    fire.y=ground_y;
     fire.jumping = false;
     fire.y_velocity=0;
   }
@@ -216,8 +213,7 @@ function render(){
   wood.x=(WIDTH/2)-(wood.width/2);
   // wood.y=(HEIGHT/2)-(wood.height/2);
   ctxDrawer.fillRect(wood.x,wood.y,wood.width,wood.height);
-  ctxDrawer.fillRect(wood.x,wood.y,wood.width,wood.height);
-  
+   
   //draw fire
   var fireImg=new Image();
   fireImg.src=fire.img;
@@ -242,14 +238,14 @@ function resetGame(){
 function s(x){
   console.log(x);
 }
-// var c =function (key,val,p) {
+// var c1 =function (key,val,p) {
 //   if (p==1) {
 //     info=" ..."+key+" : "+val; 
 //   }else{
 //     info+=" ..."+key+" : "+val; 
 //   }
 // }
-var c1 =function (key,val) {
+var c =function (key,val) {
   console.log(key+" : "+val); 
 }
 //LIFE

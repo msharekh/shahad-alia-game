@@ -13,35 +13,23 @@ var speedJump=20;
 var g=9.8;
 var isFalling=false;
  //OBJECTS
- var fire={
-  x0:10,
-  x:0,
-  y0:0,
-  y:0,
-  img:'fire.png',
-  width:30,
-  height:30,
-  jumping:true,
-  x_velocity:0,
-  y_velocity:0
-};
-var land={
-  x:0,
-  y:0,
-  color:'#996633', 
-  width:WIDTH,
-  height:40
-};
 var sky={
   x:0,
   y:0,
   color:'#6495ED',
   width:WIDTH,
-  height:HEIGHT-land.height
+  height:HEIGHT-40
+};
+var land={
+  x:0,
+  y:sky.height,
+  color:'#996633', 
+  width:WIDTH,
+  height:40
 };
 var lake={
   x:0,
-  y:0,
+  y:sky.height-1,
   img:'lake.png',
   width:170,
   height:30
@@ -55,11 +43,23 @@ var sun={
 };
 var wood={
   x:0,
-  y:0, 
+  y:HEIGHT/2, 
   // color:'#996633',
   // img:'wood.png',
   width:70,
   height:10
+};
+ var fire={
+  // x0:10,
+  x:0,
+  // y0:0,
+  y:sky.height-30,
+  img:'fire.png',
+  width:30,
+  height:30,
+  jumping:true,
+  x_velocity:0,
+  y_velocity:0
 };
 //left and right by KEYS LISTENTERS
 window.onkeydown = function(e) {
@@ -85,95 +85,105 @@ var gravityAccelerationY=10;
 var time=2;
 var isFall=false;
 var info ='';
-function checkLakeLimits(dir) {
-  var result = true;
-  var fireRightX=fire.x+fire.width;  
-  c('state','ok',1);
-  c('fireRightX',fireRightX,0);
-  c('WIDTH',WIDTH,0);
-  c('fire.x',fire.x,0);
+// function checkLakeLimits(dir) {
+//   var result = true;
+//   var fireRightX=fire.x+fire.width;  
+//   // c('state','ok',1);
+//   // c('fireRightX',fireRightX,0);
+//   // c('WIDTH',WIDTH,0);
+//   // c('fire.x',fire.x,0);
   
-  var lakeRightX=lake.x+lake.width;
-  if (dir=='r') {//don't cross x right limit
-    if (fire.x> lake.x ) {      
-      isFall=true;
-      c('isFall',isFall,0);
+//   var lakeRightX=lake.x+lake.width;
+//   if (dir=='r') {//don't cross x right limit
+//     if (fire.x> lake.x ) {      
+//       isFall=true;
+//       // c('isFall',isFall,0);
       
-    }
-  }  
-  else if(dir=='l'){//don't cross x left limit
-    if (fire.x<lakeRightX) {
-      isFall=true;
-      c('isFall',isFall,0);
-    }
-  } 
-  return isFall;
-}
-function checkBorderLimits(dir) {
-  var result = true;
-  var fireRightX=fire.x+fire.width;  
-  if (dir=='r') { //don't cross x right limit 
-    if (fireRightX>WIDTH  ) {
-      // c('state','no',0);
-      result = false;
-    }
-  } 
-  else if(dir=='l'){ //don't cross x left limit
-    if (fire.x<0) {
-      // c('state','no',0);
-      result = false;
-    }
-  } 
-  return result;
-}
-    
+//     }
+//   }  
+//   else if(dir=='l'){//don't cross x left limit
+//     if (fire.x<lakeRightX) {
+//       isFall=true;
+//       // c('isFall',isFall,0);
+//     }
+//   } 
+//   return isFall;
+// }
+// function checkBorderLimits(dir) {
+//   var result = true;
+//   var fireRightX=fire.x+fire.width;  
+//   if (dir=='r') { //don't cross x right limit 
+//     if (fireRightX>WIDTH  ) {
+//       // c('state','no',0);
+//       result = false;
+//     }
+//   } 
+//   else if(dir=='l'){ //don't cross x left limit
+//     if (fire.x<0) {
+//       // c('state','no',0);
+//       result = false;
+//     }
+//   } 
+//   return result;
+// }
+
 //ACITON
 function update(){
   /************ MOVEMENT LIMITS ***************/
-  //fire right & left
-  if (keys[39]) {
-    s('right');
       //Right
-      fire.x_velocity += 0.5;
-      fire.x+=fire.x_velocity;
+   if (keys[39]) {
+      c1('right',fire.x);
+      if (fire.x<WIDTH-fire.width+1) {
+
+        fire.x_velocity += 1;
+        fire.x+=fire.x_velocity;
+      }
     }
+
+      //Left
     if (keys[37]) {
-      s('left');
-       //Left
-       fire.x_velocity -= 0.5;
-       fire.x-=fire.x_velocity;
+      c1('left',fire.x);
+      if (fire.x>1) {
+
+        fire.x_velocity += 1;
+        fire.x-=fire.x_velocity;
+      }
        
      }
-     if (keys[38] && fire.jumping == false) {
+     
       //up
-      s('up');
+     if (keys[38] && fire.jumping == false) {
       fire.y_velocity -= 15.5;
       fire.jumping = true;
-      s(fire.jumping);
+      // s(fire.jumping);
     }//up
     
-    if (keys[40]) {
       //down
+    if (keys[40]) {
       s('down');
       
     }//down
-    c('y_velocity',fire.y_velocity,1);
-  fire.y_velocity += 1.5; //gravity
-  fire.x += fire.x_velocity;
+    // c1('y_velocity',fire.y_velocity);
+    //c1('x_velocity',fire.x_velocity);
+  c1('fire.y',fire.y);
+  // c1('sky.height',sky.height);
+
+  fire.y_velocity += 1.5; //gravity 
   fire.y += fire.y_velocity;
+
   fire.x_velocity *= 0.9 //friction
   fire.y_velocity *= 0.9 //friction
-  var ground = land.height-land.height;
-  c('y',fire.y,0);
-  c('ground',ground,0);
+  var ground = sky.height-fire.height;
+  // c1('y',fire.y);
+  // c1('ground',ground);
+
   if (fire.y > ground)
   {
     fire.y=ground;
     fire.jumping = false;
     fire.y_velocity=0;
   }
-  else{
-  }
+   
   
 }//fn update
 //DRAWING
@@ -187,33 +197,33 @@ function render(){
   ctxDrawer.fillRect(sky.x,sky.y,sky.width,sky.height);
   //draw land
   ctxDrawer.fillStyle=land.color;
-  land.y=HEIGHT-land.height;
+  // land.y=HEIGHT-land.height;
   ctxDrawer.fillRect(land.x,land.y,land.width,land.height);
   //draw lake
   var lakeImg=new Image();
   lakeImg.src=lake.img;
   lake.x=(WIDTH/2)-(lake.width/2);
-  lake.y=land.y-1;
+  // lake.y=land.y-1;
   ctxDrawer.drawImage(lakeImg,lake.x,lake.y,lake.width,lake.height);
   //draw sun
   var sunImg=new Image();
   sunImg.src=sun.img;
   lake.x=(WIDTH/2)-(lake.width/2);
-  lake.y=HEIGHT-lake.height-9;
+  // lake.y=HEIGHT-lake.height-9;
   ctxDrawer.drawImage(sunImg,sun.x,sun.y,sun.width,sun.height);
   //draw wood   
   ctxDrawer.fillStyle=wood.color;
   wood.x=(WIDTH/2)-(wood.width/2);
-  wood.y=(HEIGHT/2)-(wood.height/2);
+  // wood.y=(HEIGHT/2)-(wood.height/2);
   ctxDrawer.fillRect(wood.x,wood.y,wood.width,wood.height);
   ctxDrawer.fillRect(wood.x,wood.y,wood.width,wood.height);
   
   //draw fire
   var fireImg=new Image();
   fireImg.src=fire.img;
-  ctxDrawer.drawImage(fireImg,fire.x,fire.y+HEIGHT-fire.height-land.height+5,fire.width,fire.height);
+  ctxDrawer.drawImage(fireImg,fire.x,fire.y,fire.width,fire.height);
   score=fire.x+" - "+fire.y+" || "+fire.width+" - "+fire.height+" || "+WIDTH+" - "+HEIGHT;
-  //draw score 
+  //draw info 
   ctxDrawer.font = "7px arial";
 // Create gradient
   // Fill with gradient
@@ -232,13 +242,13 @@ function resetGame(){
 function s(x){
   console.log(x);
 }
-var c =function (key,val,p) {
-  if (p==1) {
-    info=" ..."+key+" : "+val; 
-  }else{
-    info+=" ..."+key+" : "+val; 
-  }
-}
+// var c =function (key,val,p) {
+//   if (p==1) {
+//     info=" ..."+key+" : "+val; 
+//   }else{
+//     info+=" ..."+key+" : "+val; 
+//   }
+// }
 var c1 =function (key,val) {
   console.log(key+" : "+val); 
 }

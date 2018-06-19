@@ -1,6 +1,6 @@
 // VARIABILESF
 var c=document.getElementById('myCanvas');
-var ctxDrawer=c.getContext('2d'); 
+var ctx=c.getContext('2d'); 
 var running=true;
 var finished=false;
 var score=0;
@@ -13,7 +13,7 @@ var speedJump=20;
 var g=9.8;
 var isFalling=false;
  //OBJECTS
-var sky={
+ var sky={
   x:0,
   y:0,
   color:'#6495ED',
@@ -22,14 +22,14 @@ var sky={
 };
 var land={
   x:0,
-  y:sky.height,
+  y:HEIGHT-40,
   color:'#996633', 
   width:WIDTH,
   height:40
 };
 var lake={
-  x:0,
-  y:sky.height-1,
+  x:60,
+  y:HEIGHT-40,
   img:'lake.png',
   width:170,
   height:40
@@ -42,14 +42,14 @@ var sun={
   height:40
 };
 var wood={
-  x:0,
+  x:land.width/3,
   y:HEIGHT/2, 
   // color:'#996633',
   // img:'wood.png',
   width:70,
   height:10
 };
- var fire={
+var fire={
   // x0:10,
   x:0,
   // y0:0,
@@ -88,16 +88,51 @@ var time=2;
 var isFall=false;
 var info ='';
 
- 
+
 
 //ACITON
 function update(){
   /************ MOVEMENT LIMITS ***************/
 
 
+
+    var ground_y;
+
+    ground_y=HEIGHT-30;
+
+    var L_lake=parseInt(lake.x);
+    var R_lake=parseInt(lake.x)+parseInt(lake.width);
+
+    c1('lake',L_lake +" | "+ R_lake,1);
+    // c('wood l | wood r',wood.x +" | "+ parseInt(wood.x+wood.width));
+
+    var L_fire=parseInt(fire.x);
+    var R_fire=parseInt(fire.x)+parseInt(fire.width);
+
+    c('fire',L_fire +" | "+ R_fire);
+
+    // c('lake l | lake r',lake.x +" | "+ parseInt(lake.x+lake.width));
+    // c('wood l | wood r',wood.x +" | "+ parseInt(wood.x+wood.width));
+
+    // ... above land
+    if (R_fire<L_lake ) {
+
+      ground_y = sky.height-fire.height;
+
+      c('above land',ground_y);
+    }
+    else{
+
+      
+
+      c('off land',ground_y);
+      c1('fire',L_fire +" | "+ R_fire,0);
+
+    }
+
       //------#### Right ####------
-   if (keys[39]) {
-      c('right',fire.x);
+      if (keys[39]) {
+        c('right',fire.x);
 
       //... R edge
       if (fire.x<WIDTH-fire.width+1) {
@@ -108,8 +143,8 @@ function update(){
     }
 
       //------#### Left ####------
-    if (keys[37]) {
-      c('left',fire.x);
+      if (keys[37]) {
+        c('left',fire.x);
 
       //...L edge
       if (fire.x>1) {
@@ -117,22 +152,22 @@ function update(){
         fire.x_velocity += 1;
         fire.x-=fire.x_velocity;
       }
-       
-     }
-     
+
+    }
+
       //------#### Up ####------
       //work when ..... jumbing=false
-     if (keys[38] && fire.jumping == false) {
-      fire.y_velocity -= 15.5;
-      fire.jumping = true;
+      if (keys[38] && fire.jumping == false) {
+        fire.y_velocity -= 15.5;
+        fire.jumping = true;
       // s(fire.jumping);
     }//up
     
 
       //------#### Down ####------
-    if (keys[40]) {
-      s('down');
-      
+      if (keys[40]) {
+        s('down');
+
     }//down
     //c('y_velocity',fire.y_velocity);
     //c('x_velocity',fire.x_velocity);
@@ -146,35 +181,8 @@ function update(){
   fire.x_velocity *= 0.9 //friction
   fire.y_velocity *= 0.9 //friction
 
-  var ground_y;
- var L_lake=parseInt(lake.x);
- var R_lake=parseInt(lake.x)+parseInt(lake.width);
- 
- c1('lake',L_lake +" | "+ R_lake,1);
- // c('wood l | wood r',wood.x +" | "+ parseInt(wood.x+wood.width));
+  
 
-  var L_fire=parseInt(fire.x);
-  var R_fire=parseInt(fire.x)+parseInt(fire.width);
-  c('fire',L_fire +" | "+ R_fire);
-  // c('lake l | lake r',lake.x +" | "+ parseInt(lake.x+lake.width));
-  // c('wood l | wood r',wood.x +" | "+ parseInt(wood.x+wood.width));
-
-
-  // ... above land
-  if (R_fire<L_lake || L_fire>R_lake) {
-
-    ground_y = sky.height-fire.height;
-
-    c('above land',ground_y);
-  }
-  else{
-    
-    ground_y=HEIGHT-30;
-
-    c('off land',ground_y);
-    c1('fire',L_fire +" | "+ R_fire,0);
-
-  }
 
   // ... enter water
   //   if ( fire.x+fire.width>lake.x 
@@ -200,57 +208,58 @@ function update(){
   // c('ground',ground);
 
       //------#### Gravity ####------
-  if (fire.y > ground_y)
-  {
-    fire.y=ground_y;
-    fire.jumping = false;
-    fire.y_velocity=0;
-  }
-   
-  
+      if (fire.y > ground_y)
+      {
+        fire.y=ground_y;
+        fire.jumping = false;
+        fire.y_velocity=0;
+      }
+
+
 }//fn update
 //DRAWING
 function render(){
 //clear
   //frame
-  ctxDrawer.fillStyle='black';
-  ctxDrawer.strokeRect(0,0, WIDTH,HEIGHT);
+  ctx.fillStyle='black';
+  ctx.strokeRect(0,0, WIDTH,HEIGHT);
   //sky
-  ctxDrawer.fillStyle=sky.color;
-  ctxDrawer.fillRect(sky.x,sky.y,sky.width,sky.height);
+  ctx.fillStyle=sky.color;
+  ctx.fillRect(sky.x,sky.y,sky.width,sky.height);
   //draw land
-  ctxDrawer.fillStyle=land.color;
+  ctx.fillStyle=land.color;
   // land.y=HEIGHT-land.height;
-  ctxDrawer.fillRect(land.x,land.y,land.width,land.height);
+  ctx.fillRect(land.x,land.y,land.width,land.height);
   //draw lake
   var lakeImg=new Image();
   lakeImg.src=lake.img;
-  lake.x=(WIDTH/2)-(lake.width/2);
+  // lake.x=(WIDTH/2)-(lake.width/2);
   // lake.y=land.y-1;
-  ctxDrawer.drawImage(lakeImg,lake.x,lake.y,lake.width,lake.height);
+  ctx.drawImage(lakeImg,lake.x,lake.y,lake.width,lake.height);
   //draw sun
   var sunImg=new Image();
   sunImg.src=sun.img;
-  lake.x=(WIDTH/2)-(lake.width/2);
+  
+  // lake.x=(WIDTH/2)-(lake.width/2);
   // lake.y=HEIGHT-lake.height-9;
-  ctxDrawer.drawImage(sunImg,sun.x,sun.y,sun.width,sun.height);
+  ctx.drawImage(sunImg,sun.x,sun.y,sun.width,sun.height);
   //draw wood   
-  ctxDrawer.fillStyle=wood.color;
-  wood.x=(WIDTH/2)-(wood.width/2);
+  ctx.fillStyle=wood.color;
+  //wood.x=(WIDTH/2)-(wood.width/2);
   // wood.y=(HEIGHT/2)-(wood.height/2);
-  ctxDrawer.fillRect(wood.x,wood.y,wood.width,wood.height);
-   
+  ctx.fillRect(wood.x,wood.y,wood.width,wood.height);
+
   //draw fire
   var fireImg=new Image();
   fireImg.src=fire.img;
-  ctxDrawer.drawImage(fireImg,fire.x,fire.y,fire.width,fire.height);
+  ctx.drawImage(fireImg,fire.x,fire.y,fire.width,fire.height);
   score=fire.x+" - "+fire.y+" || "+fire.width+" - "+fire.height+" || "+WIDTH+" - "+HEIGHT;
   //draw info 
-  ctxDrawer.font = "11px arial";
+  ctx.font = "11px Verdana arial";
 // Create gradient
   // Fill with gradient
-  ctxDrawer.fillStyle='black';
-  ctxDrawer.fillText(info, 10, 10);  
+  ctx.fillStyle='black';
+  ctx.fillText(info, 10, 10);  
 }
 //FUNTIONS
 function resetGame(){
@@ -275,7 +284,7 @@ var c =function (key,val) {
   console.log(key+" : "+val); 
 }
  //LIFE
-setInterval(function(){
+ setInterval(function(){
   //while(running)  
   if(running && !finished) {
    run(); 
@@ -285,6 +294,6 @@ setInterval(function(){
     resetGame();
   }
 },100);
-/****** Test-Driven Development (TDD) *****/
+ /****** Test-Driven Development (TDD) *****/
 //TDD
 /****** Test-Driven Development (TDD) *****/

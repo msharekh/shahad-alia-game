@@ -62,7 +62,19 @@ var fire={
   y_velocity:0
 };
 
+var lable={
+  x:10,
+  y:10,
+  font:"11px Verdana arial"
+};
 
+var ruler={
+  x:230,
+  y:20, 
+  color:'black',
+  width:0.5,
+  height:HEIGHT
+};
 //left and right by KEYS LISTENTERS
 window.onkeydown = function(e) {
  keys[e.keyCode]=true; 
@@ -115,8 +127,7 @@ function update(){
     // c('wood l | wood r',wood.x +" | "+ parseInt(wood.x+wood.width));
 
     // ... above land
-    if (R_fire<L_lake ) {
-
+    if (L_fire<L_lake || R_fire>R_lake) {
       ground_y = sky.height-fire.height;
 
       c('above land',ground_y);
@@ -254,12 +265,15 @@ function render(){
   fireImg.src=fire.img;
   ctx.drawImage(fireImg,fire.x,fire.y,fire.width,fire.height);
   score=fire.x+" - "+fire.y+" || "+fire.width+" - "+fire.height+" || "+WIDTH+" - "+HEIGHT;
-  //draw info 
-  ctx.font = "11px Verdana arial";
-// Create gradient
-  // Fill with gradient
-  ctx.fillStyle='black';
-  ctx.fillText(info, 10, 10);  
+  //draw lable 
+  ctx.font = lable.font;
+   ctx.fillStyle='black';
+  ctx.fillText(info, lable.x, lable.y);  
+
+  //draw ruler
+  ctx.fillStyle=ruler.color;
+  ctx.fillRect(ruler.x,ruler.y,ruler.width,ruler.height);
+
 }
 //FUNTIONS
 function resetGame(){

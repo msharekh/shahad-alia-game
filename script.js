@@ -29,7 +29,7 @@ var land={
 };
 var lake={
   x:60,
-  y:HEIGHT-40,
+  y:HEIGHT-41,
   img:'lake.png',
   width:170,
   height:40
@@ -42,7 +42,7 @@ var sun={
   height:40
 };
 var wood={
-  x:land.width/3,
+  x:110,
   y:HEIGHT/2, 
   // color:'#996633',
   // img:'wood.png',
@@ -67,14 +67,16 @@ var lable={
   y:10,
   font:"11px Verdana arial"
 };
+// var Ruler=function () {
+//   this.x=0;
+//   this.y=0;
+//   this.color='black';
+//   this.width=1;
+//   this.height=0;
+// }
 
-var ruler={
-  x:230,
-  y:20, 
-  color:'black',
-  width:0.5,
-  height:HEIGHT
-};
+
+ 
 //left and right by KEYS LISTENTERS
 window.onkeydown = function(e) {
  keys[e.keyCode]=true; 
@@ -108,42 +110,11 @@ function update(){
 
 
 
-    var ground_y;
-
-    ground_y=HEIGHT-30;
-
-    var L_lake=parseInt(lake.x);
-    var R_lake=parseInt(lake.x)+parseInt(lake.width);
-
-    c1('lake',L_lake +" | "+ R_lake,1);
-    // c('wood l | wood r',wood.x +" | "+ parseInt(wood.x+wood.width));
-
-    var L_fire=parseInt(fire.x);
-    var R_fire=parseInt(fire.x)+parseInt(fire.width);
-
-    c('fire',L_fire +" | "+ R_fire);
-
-    // c('lake l | lake r',lake.x +" | "+ parseInt(lake.x+lake.width));
-    // c('wood l | wood r',wood.x +" | "+ parseInt(wood.x+wood.width));
-
-    // ... above land
-    if (L_fire<L_lake || R_fire>R_lake) {
-      ground_y = sky.height-fire.height;
-
-      c('above land',ground_y);
-    }
-    else{
-
-      
-
-      c('off land',ground_y);
-      c1('fire',L_fire +" | "+ R_fire,0);
-
-    }
+    
 
       //------#### Right ####------
       if (keys[39]) {
-        c('right',fire.x);
+        // c('right',fire.x);
 
       //... R edge
       if (fire.x<WIDTH-fire.width+1) {
@@ -155,7 +126,7 @@ function update(){
 
       //------#### Left ####------
       if (keys[37]) {
-        c('left',fire.x);
+        // c('left',fire.x);
 
       //...L edge
       if (fire.x>1) {
@@ -177,7 +148,7 @@ function update(){
 
       //------#### Down ####------
       if (keys[40]) {
-        s('down');
+        // ('down');
 
     }//down
     //c('y_velocity',fire.y_velocity);
@@ -194,7 +165,63 @@ function update(){
 
   
 
+  var ground_y;
 
+    ground_y=HEIGHT-30;
+
+    var L_lake=parseInt(lake.x);
+    var R_lake=parseInt(lake.x)+parseInt(lake.width);
+
+    var L_wood=parseInt(wood.x);
+    var R_wood=parseInt(wood.x)+parseInt(wood.width);
+
+    c1('wood',L_wood +" | "+ R_wood,1);
+    // c('wood l | wood r',wood.x +" | "+ parseInt(wood.x+wood.width));
+
+    var L_fire=parseInt(fire.x);
+    var R_fire=parseInt(fire.x)+parseInt(fire.width);
+
+    // c('fire',L_fire +" | "+ R_fire);
+
+    // c('lake l | lake r',lake.x +" | "+ parseInt(lake.x+lake.width));
+    // c('wood l | wood r',wood.x +" | "+ parseInt(wood.x+wood.width));
+
+    // ... above land
+    if (L_fire<L_lake || R_fire>R_lake) {
+      ground_y = sky.height-fire.height;
+
+      // c('above land',ground_y);
+    }
+    else {
+
+          //... above wood
+        if (fire.y+fire.height<wood.y && R_fire>L_wood) {
+            c('above wood',fire.y);
+            c1('fire',L_fire +" | "+ R_fire,0);
+            ground_y = wood.y ;
+
+
+        }
+          // if (R_fire>L_wood || L_fire>R_wood) {
+
+          //   ground_y = wood.y-fire.height;
+          
+          //   c1('fire',L_fire +" | "+ R_fire,0);
+
+          //   c('above wood',ground_y);
+          // }
+
+        
+      //c1('fire',L_fire +" | "+ R_fire,0);
+
+    }
+//------#### Gravity ####------
+      if (fire.y > ground_y)
+      {
+        fire.y=ground_y;
+        fire.jumping = false;
+        fire.y_velocity=0;
+      }
   // ... enter water
   //   if ( fire.x+fire.width>lake.x 
   //       || fire.x<lake.x+lake.width) {
@@ -202,13 +229,7 @@ function update(){
   //     // c('enter water',ground_y);
 
 
-  //         // ... above wood
-  //         // if (fire.x+fire.width>wood.x) {
-
-  //         //   ground_y = wood.y-fire.height;
-
-  //         //   c('above wood',ground_y);
-  //         // }
+  
 
   // }else{
   // // ... off wood
@@ -218,13 +239,7 @@ function update(){
   // c('y',fire.y);
   // c('ground',ground);
 
-      //------#### Gravity ####------
-      if (fire.y > ground_y)
-      {
-        fire.y=ground_y;
-        fire.jumping = false;
-        fire.y_velocity=0;
-      }
+      
 
 
 }//fn update
@@ -254,6 +269,7 @@ function render(){
   // lake.x=(WIDTH/2)-(lake.width/2);
   // lake.y=HEIGHT-lake.height-9;
   ctx.drawImage(sunImg,sun.x,sun.y,sun.width,sun.height);
+  
   //draw wood   
   ctx.fillStyle=wood.color;
   //wood.x=(WIDTH/2)-(wood.width/2);
@@ -270,9 +286,19 @@ function render(){
    ctx.fillStyle='black';
   ctx.fillText(info, lable.x, lable.y);  
 
-  //draw ruler
-  ctx.fillStyle=ruler.color;
-  ctx.fillRect(ruler.x,ruler.y,ruler.width,ruler.height);
+
+  //draw rulers
+  var rulers=[];
+  
+  //rulers.push({x:180,y:30,width:1,height:100});
+  //rulers.push({x:wood.x,y:30,width:1,height:100});
+  // rulers.push({x:0,y:wood.y,width:WIDTH,height:1});
+   rulers.push({x:0,y:fire.y+fire.height,width:WIDTH,height:1});
+
+  for (var i = 0; i < rulers.length; i++) {
+    ctx.fillStyle=rulers[i].color;
+    ctx.fillRect(rulers[i].x,rulers[i].y,rulers[i].width,rulers[i].height);
+  }
 
 }
 //FUNTIONS

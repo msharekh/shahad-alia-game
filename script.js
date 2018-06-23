@@ -102,6 +102,17 @@ var time=2;
 var isFall=false;
 var info ='';
 
+var ground_y;
+
+var L_lake ;
+    var R_lake;
+    var L_wood;
+    var R_wood;
+  
+    var L_fire;
+    var R_fire;
+    var T_fire;
+    var B_fire;
 
 
 //ACITON
@@ -110,6 +121,57 @@ function update(){
 
 
 
+    // ground_y=HEIGHT-30;
+
+      L_lake=parseInt(lake.x);
+      R_lake=parseInt(lake.x)+parseInt(lake.width);
+
+      L_wood=parseInt(wood.x);
+       R_wood=parseInt(wood.x)+parseInt(wood.width);
+
+    c1('wood',L_wood +" | "+ R_wood,1);
+    // c('wood l | wood r',wood.x +" | "+ parseInt(wood.x+wood.width));
+
+      L_fire=parseInt(fire.x);
+      R_fire=parseInt(fire.x)+parseInt(fire.width);
+      T_fire=parseInt(fire.y);
+      B_fire=parseInt(fire.y)+parseInt(fire.height);
+
+    // c('fire',L_fire +" | "+ R_fire);
+
+    // c('lake l | lake r',lake.x +" | "+ parseInt(lake.x+lake.width));
+    // c('wood l | wood r',wood.x +" | "+ parseInt(wood.x+wood.width));
+
+    
+    // ... above land
+      if (L_fire<L_lake || R_fire>R_lake) {
+        ground_y = sky.height-fire.height;
+
+        // c('above land',ground_y);
+
+
+      }
+
+      //... above wood
+        if (
+            B_fire<wood.y 
+            && R_fire>L_wood
+            && L_fire<R_wood
+            //  ||
+            // B_fire<wood.y 
+            // && L_fire>R_wood
+            ) {
+            c('above wood',fire.y);
+            c1('fire',L_fire +" | "+ R_fire,0);
+            ground_y = wood.y-fire.height;
+
+        }
+        // else{
+        // ground_y = sky.height-fire.height;
+        // }
+
+    
+            c1("ground_y",ground_y,1) 
     
 
       //------#### Right ####------
@@ -122,20 +184,22 @@ function update(){
         fire.x_velocity += 1;
         fire.x+=fire.x_velocity;
       }
-    }
+
+      
+    }// Right
 
       //------#### Left ####------
       if (keys[37]) {
         // c('left',fire.x);
 
-      //...L edge
-      if (fire.x>1) {
+        //...L edge
+        if (fire.x>1) {
 
-        fire.x_velocity += 1;
-        fire.x-=fire.x_velocity;
-      }
+          fire.x_velocity += 1;
+          fire.x-=fire.x_velocity;
+        }
 
-    }
+     }// Left
 
       //------#### Up ####------
       //work when ..... jumbing=false
@@ -165,43 +229,8 @@ function update(){
 
   
 
-  var ground_y;
 
-    ground_y=HEIGHT-30;
-
-    var L_lake=parseInt(lake.x);
-    var R_lake=parseInt(lake.x)+parseInt(lake.width);
-
-    var L_wood=parseInt(wood.x);
-    var R_wood=parseInt(wood.x)+parseInt(wood.width);
-
-    c1('wood',L_wood +" | "+ R_wood,1);
-    // c('wood l | wood r',wood.x +" | "+ parseInt(wood.x+wood.width));
-
-    var L_fire=parseInt(fire.x);
-    var R_fire=parseInt(fire.x)+parseInt(fire.width);
-
-    // c('fire',L_fire +" | "+ R_fire);
-
-    // c('lake l | lake r',lake.x +" | "+ parseInt(lake.x+lake.width));
-    // c('wood l | wood r',wood.x +" | "+ parseInt(wood.x+wood.width));
-
-    // ... above land
-    if (L_fire<L_lake || R_fire>R_lake) {
-      ground_y = sky.height-fire.height;
-
-      // c('above land',ground_y);
-    }
-    else {
-
-          //... above wood
-        if (fire.y+fire.height<wood.y && R_fire>L_wood) {
-            c('above wood',fire.y);
-            c1('fire',L_fire +" | "+ R_fire,0);
-            ground_y = wood.y ;
-
-
-        }
+    
           // if (R_fire>L_wood || L_fire>R_wood) {
 
           //   ground_y = wood.y-fire.height;
@@ -214,7 +243,6 @@ function update(){
         
       //c1('fire',L_fire +" | "+ R_fire,0);
 
-    }
 //------#### Gravity ####------
       if (fire.y > ground_y)
       {
@@ -256,6 +284,8 @@ function render(){
   ctx.fillStyle=land.color;
   // land.y=HEIGHT-land.height;
   ctx.fillRect(land.x,land.y,land.width,land.height);
+  ctx.fillText(land.y, land.x, land.y);  
+
   //draw lake
   var lakeImg=new Image();
   lakeImg.src=lake.img;
@@ -275,6 +305,7 @@ function render(){
   //wood.x=(WIDTH/2)-(wood.width/2);
   // wood.y=(HEIGHT/2)-(wood.height/2);
   ctx.fillRect(wood.x,wood.y,wood.width,wood.height);
+  ctx.fillText(wood.y, wood.x, wood.y);  
 
   //draw fire
   var fireImg=new Image();
@@ -298,6 +329,8 @@ function render(){
   for (var i = 0; i < rulers.length; i++) {
     ctx.fillStyle=rulers[i].color;
     ctx.fillRect(rulers[i].x,rulers[i].y,rulers[i].width,rulers[i].height);
+    ctx.fillText(fire.x+":"+fire.y, WIDTH-35, rulers[i].y-5);  
+
   }
 
 }

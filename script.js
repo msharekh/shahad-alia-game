@@ -50,6 +50,8 @@ var wood = {
   width: 70,
   height: 10
 };
+
+//fire defintion
 var fire = {
   // x0:10,
   x: 0,

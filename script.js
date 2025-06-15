@@ -12,7 +12,7 @@ var isJumping = false;
 var speedJump = 20;
 var g = 9.8;
 var isFalling = false;
-var margin=0.8;
+var margin = 0.8;
 //OBJECTS
 var sky = {
   x: 0,
@@ -128,7 +128,7 @@ var B_fire;
 function update() {
   /************ MOVEMENT LIMITS ***************/
 
-// LAKE LIMITS
+  // LAKE LIMITS
   L_lake = parseInt(lake.x);
   R_lake = parseInt(lake.x) + parseInt(lake.width);
   T_lake = parseInt(lake.y);
@@ -137,6 +137,7 @@ function update() {
   // WOOD LIMITS
   L_wood = parseInt(wood.x);
   R_wood = parseInt(wood.x) + parseInt(wood.width);
+  T_wood = parseInt(wood.y) + parseInt(wood.height);
   B_wood = parseInt(wood.y);
 
   c1('wood', L_wood + " | " + R_wood, 1);
@@ -155,34 +156,33 @@ function update() {
 
 
   // ... above land
-  if (L_fire < L_wood-(margin*fire.width) || R_fire > R_wood+(margin*fire.width)) {
+  if (L_fire < L_wood - (margin * fire.width) || R_fire > R_wood + (margin * fire.width)) {
     ground_y = sky.height - fire.height;
 
     // c('above land',ground_y);
 
 
   }
-  
+
 
   //... above wood
-  
-  if (
-   B_fire < B_wood
-   && R_fire > L_wood
-   && L_fire < R_wood
-   //  ||
-   // B_fire<wood.y 
-   // && L_fire>R_wood
- ) {
-   c('above wood', T_fire);
-   c1('fire', L_fire + " | " + R_fire, 0);
-   ground_y = B_wood - fire.height;
 
- }
-  if(
-    (L_fire>L_lake & R_fire<L_wood) || (R_fire<R_lake & L_fire>R_wood)
-  )
-  {
+  if (
+    B_fire < B_wood
+    && R_fire > L_wood
+    && L_fire < R_wood
+    //  ||
+    // B_fire<wood.y 
+    // && L_fire>R_wood
+  ) {
+    c('above wood', T_fire);
+    c1('fire', L_fire + " | " + R_fire, 0);
+    ground_y = B_wood - fire.height;
+
+  }
+  if (
+    (L_fire > L_lake & R_fire < L_wood) || (R_fire < R_lake & L_fire > R_wood)
+  ) {
     // ground_y = sky.height-fire.height;
     ground_y = T_lake;
   }
@@ -382,6 +382,6 @@ setInterval(function () {
     resetGame();
   }
 }, 100);
- /****** Test-Driven Development (TDD) *****/
+/****** Test-Driven Development (TDD) *****/
 //TDD
 /****** Test-Driven Development (TDD) *****/

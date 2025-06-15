@@ -97,6 +97,7 @@ function run() {
   update();
   render();
 }
+//initial
 var jump = false;
 var velocityY = 10;
 var jumpHeightSquared = 16;
@@ -109,8 +110,13 @@ var ground_y;
 
 var L_lake;
 var R_lake;
+var T_lake;
+var B_lake;
+
 var L_wood;
 var R_wood;
+var T_wood;
+var B_wood;
 
 var L_fire;
 var R_fire;
@@ -122,18 +128,21 @@ var B_fire;
 function update() {
   /************ MOVEMENT LIMITS ***************/
 
-
-
-
+// LAKE LIMITS
   L_lake = parseInt(lake.x);
   R_lake = parseInt(lake.x) + parseInt(lake.width);
+  T_lake = parseInt(lake.y);
+  B_lake = parseInt(lake.y) - parseInt(lake.height);
 
+  // WOOD LIMITS
   L_wood = parseInt(wood.x);
   R_wood = parseInt(wood.x) + parseInt(wood.width);
+  B_wood = parseInt(wood.y);
 
   c1('wood', L_wood + " | " + R_wood, 1);
   // c('wood l | wood r',wood.x +" | "+ parseInt(wood.x+wood.width));
 
+  // FIRE LIMITS
   L_fire = parseInt(fire.x);
   R_fire = parseInt(fire.x) + parseInt(fire.width);
   T_fire = parseInt(fire.y);
@@ -156,23 +165,27 @@ function update() {
   
 
   //... above wood
+  
   if (
-    B_fire < wood.y
-    && R_fire > L_wood
-    && L_fire < R_wood
-    //  ||
-    // B_fire<wood.y 
-    // && L_fire>R_wood
-  ) {
-    c('above wood', fire.y);
-    c1('fire', L_fire + " | " + R_fire, 0);
-    ground_y = wood.y - fire.height;
+   B_fire < B_wood
+   && R_fire > L_wood
+   && L_fire < R_wood
+   //  ||
+   // B_fire<wood.y 
+   // && L_fire>R_wood
+ ) {
+   c('above wood', T_fire);
+   c1('fire', L_fire + " | " + R_fire, 0);
+   ground_y = B_wood - fire.height;
 
+ }
+  if(
+    (L_fire>L_lake & R_fire<L_wood) || (R_fire<R_lake & L_fire>R_wood)
+  )
+  {
+    // ground_y = sky.height-fire.height;
+    ground_y = T_lake;
   }
-  // else{
-  // ground_y = sky.height-fire.height;
-  // }
-
 
   c1("ground_y", ground_y, 1)
 
